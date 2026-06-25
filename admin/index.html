@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GameVault — لوحة التحكم</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css"/>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo"><span style="color:#6c63ff;font-size:2rem">◈</span> Game<span style="color:#6c63ff">Vault</span></div>
+    <h2>لوحة التحكم</h2>
+    <p class="login-sub">أدخل كلمة المرور للدخول</p>
+    <div class="form-group">
+      <input type="password" id="pwInput" placeholder="كلمة المرور" class="login-input" onkeydown="if(event.key==='Enter')checkLogin()"/>
+    </div>
+    <div class="login-error" id="loginError"></div>
+    <button class="login-btn" onclick="checkLogin()">دخول →</button>
+    <p class="login-hint">كلمة المرور الافتراضية: <code>admin123</code></p>
+  </div>
+</div>
+
+<!-- MAIN PANEL -->
+<div class="admin-wrap" id="adminWrap" style="display:none">
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <span class="logo-icon">◈</span>
+    <span>Game<span class="accent">Vault</span></span>
+    <span class="admin-badge">Admin</span>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="#" class="nav-item active" data-section="dashboard"><span class="nav-icon">⊞</span> لوحة التحكم</a>
+    <a href="#" class="nav-item" data-section="games"><span class="nav-icon">🎮</span> الألعاب</a>
+    <a href="#" class="nav-item" data-section="submissions"><span class="nav-icon">📥</span> الطلبات <span class="badge-count" id="submissionCount">0</span></a>
+    <a href="#" class="nav-item" data-section="add"><span class="nav-icon">⊕</span> إضافة لعبة</a>
+    <a href="#" class="nav-item" data-section="settings"><span class="nav-icon">⚙</span> الإعدادات</a>
+    <a href="../public/index.html" class="nav-item" target="_blank"><span class="nav-icon">↗</span> عرض الموقع</a>
+  </nav>
+  <button class="logout-btn" onclick="logout()">← تسجيل الخروج</button>
+</aside>
+
+<!-- SIDEBAR TOGGLE -->
+<button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">☰</button>
+
+<!-- MAIN CONTENT -->
+<main class="main-content" id="mainContent">
+
+  <!-- ========== DASHBOARD ========== -->
+  <section class="section active" id="sec-dashboard">
+    <div class="page-header">
+      <div>
+        <h1>لوحة التحكم</h1>
+        <p class="page-sub" id="dashGreet">مرحباً!</p>
+      </div>
+      <button class="btn-primary" onclick="exportJSON()">⬇ تصدير JSON</button>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-icon">🎮</div><div class="stat-val" id="dashTotal">0</div><div class="stat-lbl">إجمالي الألعاب</div></div>
+      <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-val" id="dashFeatured">0</div><div class="stat-lbl">مميزة</div></div>
+      <div class="stat-card"><div class="stat-icon">📥</div><div class="stat-val" id="dashPending">0</div><div class="stat-lbl">طلبات معلقة</div></div>
+      <div class="stat-card"><div class="stat-icon">📂</div><div class="stat-val" id="dashGenres">0</div><div class="stat-lbl">تصنيفات</div></div>
+      <div class="stat-card"><div class="stat-icon">💾</div><div class="stat-val" id="dashSize">0</div><div class="stat-lbl">حجم البيانات</div></div>
+    </div>
+    <div class="dash-row">
+      <div class="dash-col">
+        <h2 class="sec-title">أحدث الألعاب المضافة</h2>
+        <div id="recentGames"></div>
+      </div>
+      <div class="dash-col">
+        <h2 class="sec-title">توزيع التصنيفات</h2>
+        <div id="genreChart"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== GAMES LIST ========== -->
+  <section class="section" id="sec-games">
+    <div class="page-header">
+      <div>
+        <h1>إدارة الألعاب</h1>
+        <p class="page-sub" id="gamesCount">...</p>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <input type="text" class="search-field" id="tableSearch" placeholder="🔍 بحث..." oninput="filterTable()"/>
+        <select class="sort-field" id="tableGenreFilter" onchange="filterTable()"><option value="">كل التصنيفات</option></select>
+        <button class="btn-primary" onclick="switchSection('add');resetForm()">⊕ إضافة</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="games-table">
+        <thead>
+          <tr>
+            <th style="width:50px">#</th>
+            <th style="width:70px">الغلاف</th>
+            <th>الاسم</th>
+            <th>المطور</th>
+            <th>النوع</th>
+            <th>السنة</th>
+            <th>التقييم</th>
+            <th>مميزة</th>
+            <th style="width:120px">إجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="gamesTableBody"></tbody>
+      </table>
+    </div>
+    <div class="table-pagination" id="tablePagination"></div>
+  </section>
+
+  <!-- ========== SUBMISSIONS ========== -->
+  <section class="section" id="sec-submissions">
+    <div class="page-header">
+      <h1>طلبات إضافة الألعاب</h1>
+      <p class="page-sub">مراجعة الطلبات الواردة من المستخدمين</p>
+    </div>
+    <div class="submissions-tabs">
+      <button class="sub-tab active" data-status="pending" onclick="filterSubmissions('pending')">⏳ معلقة <span id="pendingCnt"></span></button>
+      <button class="sub-tab" data-status="approved" onclick="filterSubmissions('approved')">✅ مقبولة <span id="approvedCnt"></span></button>
+      <button class="sub-tab" data-status="rejected" onclick="filterSubmissions('rejected')">❌ مرفوضة <span id="rejectedCnt"></span></button>
+    </div>
+    <div id="submissionsList"></div>
+  </section>
+
+  <!-- ========== ADD / EDIT ========== -->
+  <section class="section" id="sec-add">
+    <div class="page-header">
+      <h1 id="formTitle">إضافة لعبة جديدة</h1>
+    </div>
+    <div class="form-card">
+      <input type="hidden" id="editId"/>
+
+      <div class="form-tabs">
+        <button type="button" class="form-tab active" onclick="switchFormTab('basic')">📝 المعلومات</button>
+        <button type="button" class="form-tab" onclick="switchFormTab('media')">🖼️ الوسائط</button>
+        <button type="button" class="form-tab" onclick="switchFormTab('extra')">⚙ إضافي</button>
+      </div>
+
+      <!-- BASIC -->
+      <div class="form-section active" id="ftab-basic">
+        <div class="form-row">
+          <div class="form-group">
+            <label>الاسم (عربي) *</label>
+            <input type="text" id="f_title_ar" placeholder="اسم اللعبة بالعربية"/>
+          </div>
+          <div class="form-group">
+            <label>الاسم (إنجليزي) *</label>
+            <input type="text" id="f_title_en" placeholder="Game title in English" dir="ltr"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>الوصف (عربي) *</label>
+            <textarea id="f_desc_ar" rows="4" placeholder="وصف اللعبة بالعربية..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>الوصف (إنجليزي) *</label>
+            <textarea id="f_desc_en" rows="4" placeholder="Game description in English..." dir="ltr"></textarea>
+          </div>
+        </div>
+        <div class="form-row three">
+          <div class="form-group">
+            <label>النوع (عربي)</label>
+            <input type="text" id="f_genre_ar" placeholder="مثال: أكشن RPG" list="genreArList"/>
+            <datalist id="genreArList"><option value="أكشن"/><option value="تقمص أدوار"/><option value="مغامرة"/><option value="محاكاة"/><option value="استراتيجية"/><option value="رعب"/><option value="روغ لايك"/><option value="بقاء"/></datalist>
+          </div>
+          <div class="form-group">
+            <label>النوع (إنجليزي)</label>
+            <input type="text" id="f_genre_en" placeholder="e.g. Action RPG" dir="ltr" list="genreEnList"/>
+            <datalist id="genreEnList"><option value="Action"/><option value="RPG"/><option value="Action RPG"/><option value="Adventure"/><option value="Simulation"/><option value="Strategy"/><option value="Horror"/><option value="Roguelike"/><option value="Survival"/><option value="Indie"/></datalist>
+          </div>
+          <div class="form-group">
+            <label>المطور</label>
+            <input type="text" id="f_developer" placeholder="شركة التطوير"/>
+          </div>
+        </div>
+        <div class="form-row three">
+          <div class="form-group">
+            <label>سنة الإصدار</label>
+            <input type="number" id="f_year" min="1980" max="2030" placeholder="2024"/>
+          </div>
+          <div class="form-group">
+            <label>التقييم (من 5)</label>
+            <input type="number" id="f_rating" min="0" max="5" step="0.1" placeholder="4.5"/>
+          </div>
+          <div class="form-group">
+            <label>رابط التحميل *</label>
+            <input type="url" id="f_download" placeholder="https://..." dir="ltr"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>الوسوم (عربي)</label>
+            <input type="text" id="f_tags_ar" placeholder="عالم مفتوح، أكشن، مغامرة"/>
+          </div>
+          <div class="form-group">
+            <label>الوسوم (إنجليزي)</label>
+            <input type="text" id="f_tags_en" placeholder="Open World, Action, Adventure" dir="ltr"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- MEDIA -->
+      <div class="form-section" id="ftab-media">
+        <div class="form-group">
+          <label>رابط صورة الغلاف</label>
+          <input type="url" id="f_cover" placeholder="https://cdn.cloudflare.steamstatic.com/steam/apps/.../header.jpg" dir="ltr" oninput="previewImg('f_cover','prevCover')"/>
+          <small>Steam URL: https://cdn.cloudflare.steamstatic.com/steam/apps/APP_ID/header.jpg</small>
+          <img id="prevCover" src="" alt="" class="field-preview" onerror="this.style.display='none'" onload="this.style.display='block'"/>
+        </div>
+        <div class="form-group">
+          <label>رابط الشعار (Logo)</label>
+          <input type="url" id="f_logo" placeholder="https://..." dir="ltr" oninput="previewImg('f_logo','prevLogo')"/>
+          <img id="prevLogo" src="" alt="" class="field-preview small" onerror="this.style.display='none'" onload="this.style.display='block'"/>
+        </div>
+      </div>
+
+      <!-- EXTRA -->
+      <div class="form-section" id="ftab-extra">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="f_featured"/>
+              <span class="checkbox-custom"></span>
+              تضمين في "الألعاب المميزة"
+            </label>
+          </div>
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="f_is_free"/>
+              <span class="checkbox-custom"></span>
+              اللعبة مجانية
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-primary" id="saveBtn" onclick="saveGame()">💾 حفظ اللعبة</button>
+        <button class="btn-secondary" onclick="resetForm(); switchSection('games')">✕ إلغاء</button>
+      </div>
+      <div class="form-msg" id="formMsg"></div>
+    </div>
+  </section>
+
+  <!-- ========== SETTINGS ========== -->
+  <section class="section" id="sec-settings">
+    <div class="page-header"><h1>الإعدادات</h1></div>
+    <div class="form-card">
+      <h3 class="sec-title">🔐 تغيير كلمة المرور</h3>
+      <div class="form-group"><label>كلمة المرور الحالية</label><input type="password" id="currPw"/></div>
+      <div class="form-group"><label>كلمة المرور الجديدة</label><input type="password" id="newPw"/></div>
+      <div class="form-group"><label>تأكيد كلمة المرور الجديدة</label><input type="password" id="newPw2"/></div>
+      <button class="btn-primary" onclick="changePassword()">حفظ كلمة المرور</button>
+      <div class="form-msg" id="pwMsg" style="margin-top:12px"></div>
+    </div>
+    <div class="form-card" style="margin-top:20px">
+      <h3 class="sec-title">🔗 إعدادات GitHub (للنشر التلقائي)</h3>
+      <div class="form-group"><label>GitHub Token</label><input type="password" id="ghToken" placeholder="ghp_..."/></div>
+      <div class="form-group"><label>مالك الـ Repository</label><input type="text" id="ghOwner" placeholder="username" dir="ltr"/></div>
+      <div class="form-group"><label>اسم الـ Repository</label><input type="text" id="ghRepo" placeholder="my-repo" dir="ltr"/></div>
+      <div class="form-group"><label>مسار ملف games.json</label><input type="text" id="ghPath" placeholder="public/data/games.json" dir="ltr"/></div>
+      <button class="btn-primary" onclick="saveGithubSettings()">💾 حفظ الإعدادات</button>
+      <div class="form-msg" id="ghMsg" style="margin-top:12px"></div>
+    </div>
+    <div class="form-card" style="margin-top:20px">
+      <h3 class="sec-title" style="color:var(--red)">⚠️ خطر</h3>
+      <p style="color:var(--text2);margin-bottom:16px;font-size:0.9rem">إجراءات لا يمكن التراجع عنها</p>
+      <button class="btn-danger" onclick="clearStorage()">🗑️ مسح جميع البيانات المحلية</button>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal-overlay" id="deleteOverlay">
+  <div class="confirm-modal">
+    <div class="confirm-icon">🗑️</div>
+    <h3>تأكيد الحذف</h3>
+    <p>هل أنت متأكد من حذف هذه اللعبة؟ لا يمكن التراجع.</p>
+    <div class="confirm-actions">
+      <button class="btn-danger" id="confirmDeleteBtn">نعم، احذف</button>
+      <button class="btn-secondary" onclick="closeDeleteModal()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-lang="ar">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="GameVault — مكتبة الألعاب العربية الأولى. تصفح وحمّل أفضل ألعاب PC مجاناً."/>
+  <title>GameVault — مكتبة الألعاب</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css"/>
+  <!-- Fake ad element for adblock detection -->
+  <div id="adblock-bait" class="ad-banner" style="position:absolute;left:-9999px;height:1px;width:1px;"></div>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<!-- ADBLOCK WARNING -->
+<div class="adblock-overlay" id="adblockOverlay">
+  <div class="adblock-box">
+    <div class="adblock-icon">🛡️</div>
+    <h2>نرجو دعمنا!</h2>
+    <p>يبدو أنك تستخدم <strong>مانع الإعلانات</strong>. موقعنا مجاني تماماً ويعتمد على الإعلانات للاستمرار وتقديم أفضل محتوى.</p>
+    <p class="adblock-sub">أوقف مانع الإعلانات لدعمنا والمساهمة في استمرار الموقع 🙏</p>
+    <div class="adblock-steps">
+      <div class="adblock-step"><span>1</span> اضغط على أيقونة مانع الإعلانات في المتصفح</div>
+      <div class="adblock-step"><span>2</span> اختر "تعطيل على هذا الموقع"</div>
+      <div class="adblock-step"><span>3</span> أعد تحميل الصفحة</div>
+    </div>
+    <button class="adblock-btn" onclick="checkAdblock()">✓ أوقفت مانع الإعلانات</button>
+    <button class="adblock-skip" onclick="skipAdblock()">تجاوز (بعض الميزات ستُعطل)</button>
+  </div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-icon">◈</span>
+      <span class="logo-text">Game<span class="accent">Vault</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="#gamesSection" class="nav-link" id="navGames">الألعاب</a>
+      <a href="#featuredSection" class="nav-link" id="navFeatured">المميزة</a>
+      <a href="submit.html" class="nav-link nav-link-submit" id="navSubmit">🎮 أضف لعبتك</a>
+    </div>
+    <div class="nav-actions">
+      <div class="search-wrap">
+        <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن لعبة..."/>
+        <span class="search-icon">⌕</span>
+        <div class="search-suggestions" id="searchSuggestions"></div>
+      </div>
+      <button class="lang-btn" id="langToggle" title="Switch Language">
+        <span id="langLabel">EN</span>
+      </button>
+      <button class="theme-btn" id="themeToggle" title="تغيير السمة">☀</button>
+    </div>
+    <button class="hamburger" id="hamburger">☰</button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#gamesSection" id="mnavGames" onclick="closeMobileMenu()">الألعاب</a>
+  <a href="#featuredSection" id="mnavFeatured" onclick="closeMobileMenu()">المميزة</a>
+  <a href="submit.html" id="mnavSubmit" onclick="closeMobileMenu()">🎮 أضف لعبتك</a>
+  <button class="lang-btn" onclick="toggleLang(); closeMobileMenu()"><span id="mlangLabel">EN</span></button>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="heroSection">
+  <div class="hero-content">
+    <p class="hero-eyebrow" id="heroEyebrow">مكتبة الألعاب العربية الأولى</p>
+    <h1 class="hero-title" id="heroTitle">اكتشف<br/><span class="gradient-text" id="heroGradient">أفضل الألعاب</span></h1>
+    <p class="hero-sub" id="heroSub">تصفّح، اكتشف، وحمّل أفضل ألعاب الحاسوب في مكان واحد</p>
+    <div class="hero-btns">
+      <button class="cta-btn" id="heroBtn" onclick="document.getElementById('gamesSection').scrollIntoView({behavior:'smooth'})">
+        <span id="heroBtnText">استعرض الألعاب</span> <span class="cta-arrow">↓</span>
+      </button>
+      <a href="submit.html" class="cta-btn-outline" id="heroBtn2">🎮 <span id="heroBtnText2">أضف لعبتك</span></a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-num" id="statGames">0</span><span class="stat-label" id="statGamesLabel">لعبة</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat"><span class="stat-num" id="statGenres">0</span><span class="stat-label" id="statGenresLabel">تصنيف</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat"><span class="stat-num">مجاني</span><span class="stat-label" id="statFreeLabel">الوصول</span></div>
+  </div>
+</section>
+
+<!-- FEATURED -->
+<section class="section" id="featuredSection">
+  <div class="section-header">
+    <span class="section-tag" id="featuredTag">مميزة</span>
+    <h2 class="section-title" id="featuredTitle">ألعاب مختارة</h2>
+  </div>
+  <div class="featured-grid" id="featuredGrid"></div>
+</section>
+
+<!-- FILTERS + GAMES -->
+<section class="section" id="gamesSection">
+  <div class="section-header">
+    <span class="section-tag" id="allGamesTag">المكتبة</span>
+    <h2 class="section-title" id="allGamesTitle">جميع الألعاب</h2>
+  </div>
+
+  <!-- SORT + FILTER BAR -->
+  <div class="filter-bar">
+    <div class="filter-scroll" id="filterScroll"></div>
+    <div class="sort-wrap">
+      <select class="sort-select" id="sortSelect">
+        <option value="default" id="sortDefault">الترتيب الافتراضي</option>
+        <option value="rating-desc" id="sortRating">الأعلى تقييماً</option>
+        <option value="year-desc" id="sortNewest">الأحدث</option>
+        <option value="year-asc" id="sortOldest">الأقدم</option>
+        <option value="alpha-asc" id="sortAlpha">أ-ي</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- RESULTS INFO -->
+  <div class="results-info" id="resultsInfo"></div>
+
+  <!-- GAMES GRID -->
+  <div class="games-grid" id="gamesGrid"></div>
+
+  <!-- PAGINATION -->
+  <div class="pagination" id="pagination"></div>
+</section>
+
+<!-- GAME MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="gameModal">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div class="modal-cover-wrap">
+      <img class="modal-cover" id="modalCover" src="" alt=""/>
+      <div class="modal-cover-overlay"></div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-header">
+        <img class="modal-logo" id="modalLogo" src="" alt="" onerror="this.style.display='none'"/>
+        <div class="modal-title-wrap">
+          <h2 class="modal-title" id="modalTitle"></h2>
+          <div class="modal-meta">
+            <span class="modal-dev" id="modalDev"></span>
+            <span class="modal-sep">·</span>
+            <span class="modal-year" id="modalYear"></span>
+            <span class="modal-sep">·</span>
+            <span class="modal-genre" id="modalGenre"></span>
+          </div>
+        </div>
+        <div class="modal-rating-wrap">
+          <div class="modal-rating" id="modalRating"></div>
+          <div class="modal-stars" id="modalStars"></div>
+        </div>
+      </div>
+      <div class="modal-tags" id="modalTags"></div>
+      <p class="modal-desc" id="modalDesc"></p>
+      <div class="modal-actions">
+        <a class="download-btn" id="modalDownload" href="#" target="_blank" rel="noopener noreferrer">
+          <span class="dl-icon">↓</span> <span id="dlBtnText">تحميل اللعبة</span>
+        </a>
+        <button class="share-btn" id="shareBtn" onclick="shareGame()">
+          🔗 <span id="shareBtnText">مشاركة</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- BACK TO TOP -->
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <span class="logo-icon">◈</span>
+      <span class="logo-text">Game<span class="accent">Vault</span></span>
+    </div>
+    <p class="footer-desc" id="footerDesc">مكتبة الألعاب العربية الأولى — مجانية وللجميع</p>
+    <div class="footer-links">
+      <a href="submit.html" id="footerSubmit">أضف لعبة</a>
+      <span>·</span>
+      <a href="#featuredSection" id="footerFeatured">المميزة</a>
+    </div>
+    <p class="footer-copy" id="footerText">جميع الحقوق محفوظة © 2025 GameVault</p>
+  </div>
+</footer>
+
+<script src="js/app.js"></script>
+</body>
+</html>
